@@ -1,4 +1,4 @@
-package com.asc.loanservice.contracts;
+package com.asc.loanservice.contracts.loanrequest;
 
 public enum LoanRequestEvaluationResult {
     APPROVED,
