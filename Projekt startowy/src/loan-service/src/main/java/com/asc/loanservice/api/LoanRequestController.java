@@ -2,7 +2,7 @@ package com.asc.loanservice.api;
 
 import com.asc.loanservice.contracts.loanrequest.LoanRequestDataDto;
 import com.asc.loanservice.contracts.loanrequest.LoanRequestDto;
-import com.asc.loanservice.contracts.loanrequest.LoanRequestDtoMapper;
+import com.asc.loanservice.contracts.loanrequest.LoanRequestMapper;
 import com.asc.loanservice.contracts.loanrequest.LoanRequestRegistrationResultDto;
 import com.asc.loanservice.domain.LoanRequest;
 import com.asc.loanservice.domain.LoanRequestService;
@@ -20,19 +20,19 @@ import javax.validation.Valid;
 public class LoanRequestController {
 
     private final LoanRequestService loanRequestService;
-    private final LoanRequestDtoMapper loanRequestDtoMapper;
+    private final LoanRequestMapper loanRequestMapper;
 
     public LoanRequestController(
             LoanRequestService loanRequestService,
-            LoanRequestDtoMapper loanRequestDtoMapper) {
+            LoanRequestMapper loanRequestMapper) {
         this.loanRequestService = loanRequestService;
-        this.loanRequestDtoMapper = loanRequestDtoMapper;
+        this.loanRequestMapper = loanRequestMapper;
     }
 
     @PostMapping
     public LoanRequestRegistrationResultDto register(
             @RequestBody @Valid LoanRequestDto loanRequestDto) {
-        LoanRequest receivedLoanRequest = loanRequestDtoMapper.asEntity(loanRequestDto);
+        LoanRequest receivedLoanRequest = loanRequestMapper.asEntity(loanRequestDto);
         LoanRequest registeredLoanRequest = loanRequestService
                 .registerLoanRequest(receivedLoanRequest);
         return buildLoanRequestRegistrationResult(registeredLoanRequest);
@@ -47,7 +47,7 @@ public class LoanRequestController {
 
     @GetMapping("/{loanNumber}")
     public LoanRequestDataDto getByNumber(@PathVariable("loanNumber") String loanNumber) {
-        //TODO: implement
-        return null;
+        return loanRequestMapper
+                .asDataDto(loanRequestService.getLoanRequest(Long.parseLong(loanNumber)));
     }
 }

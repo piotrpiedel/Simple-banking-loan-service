@@ -1,6 +1,6 @@
 package com.asc.loanservice.domain;
 
-import com.asc.loanservice.contracts.loanrequest.LoanRequestRegistrationResultDto;
+import com.asc.loanservice.domain.LoanRequest.LoanRequestStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -18,27 +18,15 @@ public class LoanRequestService {
         this.loanRequestValidator = loanRequestValidator;
     }
 
-    public LoanRequestRegistrationResultDto getLoanRequest(long loanRequestId) {
+    public LoanRequest getLoanRequest(long loanRequestId) {
         Optional<LoanRequest> loanRequestResult = loanRequestRepository
                 .findById(loanRequestId);
-        if (loanRequestResult.isPresent()) {
-            LoanRequest loanRequest = loanRequestResult.get();
-            return new LoanRequestRegistrationResultDto(
-                    String.valueOf(loanRequest.getLoanRequestNumber()),
-                    loanRequest.getEvaluationResult());
-        }
-        return null;
+        return loanRequestResult.orElse(null);
     }
 
     public LoanRequest registerLoanRequest(LoanRequest loanRequest) {
-        LoanRequest emptyLoanRequest = loanRequestRepository.save(new LoanRequest());
-        LoanRequest.LoanRequestStatus loanRequestStatus = loanRequestValidator
-                .validate(loanRequest);
-        return fillLoanRequestWithdata(emptyLoanRequest, loanRequest);
-    }
-
-    private LoanRequest fillLoanRequestWithdata(
-            LoanRequest emptyLoanRequest, LoanRequest loanRequest) {
-        return new LoanRequest();
+        LoanRequestStatus loanRequestStatus = loanRequestValidator.validate(loanRequest);
+        loanRequest.setEvaluationResult(loanRequestStatus);
+        return loanRequestRepository.save(loanRequest);
     }
 }
