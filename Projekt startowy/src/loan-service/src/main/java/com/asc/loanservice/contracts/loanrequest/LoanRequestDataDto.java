@@ -1,10 +1,12 @@
 package com.asc.loanservice.contracts.loanrequest;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.PrePersist;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class LoanRequestDataDto {
     private String loanRequestNumber;
     private String customerName;
@@ -24,4 +27,9 @@ public class LoanRequestDataDto {
     private LocalDate firstInstallmentDate;
     private LoanRequestEvaluationResult evaluationResult;
     private LocalDateTime registrationDate;
+
+    @PrePersist
+    protected void onCreate() {
+        registrationDate = LocalDateTime.now();
+    }
 }

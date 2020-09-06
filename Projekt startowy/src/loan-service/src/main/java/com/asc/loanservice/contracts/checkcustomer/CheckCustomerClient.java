@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import static com.asc.loanservice.contracts.checkcustomer.CheckCustomerClientConfig.CHECK_CUSTOMER_ENDPOINT;
+
 @Component
 public class CheckCustomerClient {
 
@@ -17,9 +19,11 @@ public class CheckCustomerClient {
 
     public CustomerCheckResultDto checkCustomerIfExistOnDebtorsList(String customerTaxId) {
         ResponseEntity<CustomerCheckResultDto> result = rest.exchange(
-                "http://bykowski.pl/materials/HttpExample.php?name=Przemek",
-                HttpMethod.GET, HttpEntity.EMPTY,
-                CustomerCheckResultDto.class);
+                CHECK_CUSTOMER_ENDPOINT,
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                CustomerCheckResultDto.class,
+                customerTaxId);
 
         if (result.getBody() != null) {
             return result.getBody();

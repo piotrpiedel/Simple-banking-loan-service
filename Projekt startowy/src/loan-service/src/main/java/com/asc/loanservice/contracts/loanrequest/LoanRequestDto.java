@@ -1,6 +1,7 @@
 package com.asc.loanservice.contracts.loanrequest;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class LoanRequestDto {
     @NotNull
     @NotEmpty

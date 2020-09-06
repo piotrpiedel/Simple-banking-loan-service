@@ -1,6 +1,7 @@
 package com.asc.loanservice.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class LoanRequest {
 
     @Id
@@ -34,6 +36,7 @@ public class LoanRequest {
     private LocalDate firstInstallmentDate;
     @Enumerated(EnumType.STRING)
     private LoanRequestStatus evaluationResult;
+
     private LocalDateTime registrationDate;
 
     public enum LoanRequestStatus {

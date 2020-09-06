@@ -7,14 +7,31 @@ import org.springframework.stereotype.Component;
 public class LoanRequestMapper {
 
     public LoanRequest asEntity(LoanRequestDto loanRequestDto) {
-        return new LoanRequest();
-    }
-
-    public LoanRequestDto asDto(LoanRequest loanRequest) {
-        return new LoanRequestDto();
+        return LoanRequest.builder()
+                .customerName(loanRequestDto.getCustomerName())
+                .customerBirthday(loanRequestDto.getCustomerBirthday())
+                .customerTaxId(loanRequestDto.getCustomerTaxId())
+                .customerMonthlyIncome(loanRequestDto.getCustomerMonthlyIncome())
+                .loanAmount(loanRequestDto.getLoanAmount())
+                .numberOfInstallments(loanRequestDto.getNumberOfInstallments())
+                .firstInstallmentDate(loanRequestDto.getFirstInstallmentDate())
+                .firstInstallmentDate(loanRequestDto.getFirstInstallmentDate())
+                .build();
     }
 
     public LoanRequestDataDto asDataDto(LoanRequest loanRequest) {
-        return new LoanRequestDataDto();
+        return LoanRequestDataDto.builder()
+                .loanRequestNumber(String.valueOf(loanRequest.getLoanRequestNumber()))
+                .customerName(loanRequest.getCustomerName())
+                .customerBirthday(loanRequest.getCustomerBirthday())
+                .customerTaxId(loanRequest.getCustomerTaxId())
+                .customerMonthlyIncome(loanRequest.getCustomerMonthlyIncome())
+                .loanAmount(loanRequest.getLoanAmount())
+                .numberOfInstallments(loanRequest.getNumberOfInstallments())
+                .firstInstallmentDate(loanRequest.getFirstInstallmentDate())
+                .evaluationResult(LoanRequestEvaluationResult.valueOf(loanRequest
+                        .getEvaluationResult().toString()))
+                .registrationDate(loanRequest.getRegistrationDate())
+                .build();
     }
 }

@@ -46,12 +46,14 @@ public class LoanRequestController {
                         .getEvaluationResult().toString());
 
         return new LoanRequestRegistrationResultDto(
-                String.valueOf(registeredLoanRequest.getLoanRequestNumber()), loanRequestEvaluationResult);
+                String.valueOf(registeredLoanRequest.getLoanRequestNumber()),
+                loanRequestEvaluationResult);
     }
 
     @GetMapping("/{loanNumber}")
     public LoanRequestDataDto getByNumber(@PathVariable("loanNumber") String loanNumber) {
+        LoanRequest loanRequest = loanRequestService.getLoanRequest(Long.parseLong(loanNumber));
         return loanRequestMapper
-                .asDataDto(loanRequestService.getLoanRequest(Long.parseLong(loanNumber)));
+                .asDataDto(loanRequest);
     }
 }
