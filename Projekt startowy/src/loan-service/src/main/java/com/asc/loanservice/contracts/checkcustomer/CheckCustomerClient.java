@@ -3,15 +3,15 @@ package com.asc.loanservice.contracts.checkcustomer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+@Component
 public class CheckCustomerClient {
 
-    private final CheckCustomerClient checkCustomerClient;
     private final RestTemplate rest;
 
-    public CheckCustomerClient(CheckCustomerClient checkCustomerClient) {
-        this.checkCustomerClient = checkCustomerClient;
+    public CheckCustomerClient() {
         rest = new RestTemplate();
     }
 

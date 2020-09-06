@@ -2,6 +2,7 @@ package com.asc.loanservice.api;
 
 import com.asc.loanservice.contracts.loanrequest.LoanRequestDataDto;
 import com.asc.loanservice.contracts.loanrequest.LoanRequestDto;
+import com.asc.loanservice.contracts.loanrequest.LoanRequestEvaluationResult;
 import com.asc.loanservice.contracts.loanrequest.LoanRequestMapper;
 import com.asc.loanservice.contracts.loanrequest.LoanRequestRegistrationResultDto;
 import com.asc.loanservice.domain.LoanRequest;
@@ -40,9 +41,12 @@ public class LoanRequestController {
 
     private LoanRequestRegistrationResultDto buildLoanRequestRegistrationResult(
             LoanRequest registeredLoanRequest) {
+        LoanRequestEvaluationResult loanRequestEvaluationResult = LoanRequestEvaluationResult
+                .valueOf(registeredLoanRequest
+                        .getEvaluationResult().toString());
+
         return new LoanRequestRegistrationResultDto(
-                String.valueOf(registeredLoanRequest.getLoanRequestNumber()),
-                registeredLoanRequest.getEvaluationResult());
+                String.valueOf(registeredLoanRequest.getLoanRequestNumber()), loanRequestEvaluationResult);
     }
 
     @GetMapping("/{loanNumber}")

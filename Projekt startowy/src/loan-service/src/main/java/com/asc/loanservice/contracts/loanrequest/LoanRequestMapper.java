@@ -1,8 +1,9 @@
 package com.asc.loanservice.contracts.loanrequest;
 
 import com.asc.loanservice.domain.LoanRequest;
+import org.springframework.stereotype.Component;
 
-//TODO: implement
+@Component
 public class LoanRequestMapper {
 
     public LoanRequest asEntity(LoanRequestDto loanRequestDto) {

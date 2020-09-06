@@ -1,7 +1,9 @@
 package com.asc.loanservice.contracts.checkcustomer;
 
 import com.asc.loanservice.domain.CustomerCheck;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CheckCustomerService implements CustomerCheck {
     CheckCustomerClient checkCustomerClient;
 

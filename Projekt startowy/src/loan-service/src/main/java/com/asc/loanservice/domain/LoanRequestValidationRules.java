@@ -10,78 +10,83 @@ import java.util.function.Predicate;
 public class LoanRequestValidationRules {
 
     public static final int MAX_CLIENT_AGE_IN_YEARS = 65;
-    public static final int NUMBER_OF_MONTHS_IN_YEAR = 12;
     public static final double MAXIMUM_RATE_TO_INCOME_PERCENTAGE = 0.15;
 
-    private final List<Predicate<LoanRequest>> loanRequestValidationRules;
+    private final List<Predicate<LoanRequest>> validationRules;
 
     private final LoanRequest loanRequest;
     private final CustomerCheck customerCheck;
     private final double creditInterestsRateYearly;
 
     LoanRequestValidationRules(
-            LoanRequest loanRequest, CustomerCheck customerCheck,
+            LoanRequest loanRequest,
+            CustomerCheck customerCheck,
             double creditInterestsRateYearly) {
         this.loanRequest = loanRequest;
         this.customerCheck = customerCheck;
         this.creditInterestsRateYearly = creditInterestsRateYearly;
-        loanRequestValidationRules = new ArrayList<>();
+        validationRules = new ArrayList<>();
     }
 
     public LoanRequestValidationRules clientAgeLesserThanSixtyFiveWhenLoanRepaid() {
-        int numberOfLoanMonths = loanRequest.getNumberOfInstallments();
-        LocalDate firstInstallmentDate = loanRequest.getFirstInstallmentDate();
-        int yearWhenLoanWillBeRepaid = firstInstallmentDate
-                .plusMonths(numberOfLoanMonths)
-                .getYear();
+        int yearWhenLoanWillBeRepaid = getYearWhenLoanWillBeRepaid();
+        int customerYearOfBirth = getCustomerYearOfBirth();
 
-        int customerYearOfBirth = loanRequest.getCustomerBirthday().getYear();
-        int customerAgeInYearsWhenLoanWillBeRepaid = yearWhenLoanWillBeRepaid - customerYearOfBirth;
-        loanRequestValidationRules
-                .add(rule -> customerAgeInYearsWhenLoanWillBeRepaid <= MAX_CLIENT_AGE_IN_YEARS);
+        int customerAgeInYears = calculateCustomerAgeWhenLoanWillBeRepaid(
+                yearWhenLoanWillBeRepaid, customerYearOfBirth);
+        validationRules
+                .add(rule -> customerAgeInYears <= MAX_CLIENT_AGE_IN_YEARS);
         return this;
     }
 
-    /*
-    Fixed installment algorithm = c * y^n * (y‑1) / (y^n‑1)
-        c – loan amount
-        n – number of installments
-        y = 1 + (r / 12), where r is credit interests rate yearly
-    */
+    private int getYearWhenLoanWillBeRepaid() {
+        int numberOfLoanMonths = loanRequest.getNumberOfInstallments();
+        LocalDate firstInstallmentDate = loanRequest.getFirstInstallmentDate();
+        return firstInstallmentDate
+                .plusMonths(numberOfLoanMonths)
+                .getYear();
+    }
+
+    private int getCustomerYearOfBirth() {
+        return loanRequest
+                .getCustomerBirthday()
+                .getYear();
+    }
+
+    private int calculateCustomerAgeWhenLoanWillBeRepaid(
+            int yearWhenLoanWillBeRepaid, int customerYearOfBirth) {
+        return yearWhenLoanWillBeRepaid - customerYearOfBirth;
+    }
+
     public LoanRequestValidationRules monthlyRatesMaximumPercentageToIncome() {
         int numberOfInstallments = loanRequest.getNumberOfInstallments();
         BigDecimal loanAmount = loanRequest.getLoanAmount();
-        BigDecimal monthlyRateValue = calculateMonthlyRateValue(numberOfInstallments, loanAmount);
+        FixedRateMonthly fixedRateMonthly = FixedRateMonthly
+                .of(loanAmount, numberOfInstallments, creditInterestsRateYearly);
+
+        BigDecimal monthlyRateValue = fixedRateMonthly.getAsBigDecimal();
 
         BigDecimal customerMonthlyIncome = loanRequest.getCustomerMonthlyIncome();
-        loanRequestValidationRules
-                .add(rule -> monthlyRateValue
-                        .divide(customerMonthlyIncome, RoundingMode.HALF_UP)
-                        .compareTo(BigDecimal.valueOf(MAXIMUM_RATE_TO_INCOME_PERCENTAGE)) < 0);
+        validationRules
+                .add(monthlyToIncomePercentage(monthlyRateValue, customerMonthlyIncome));
         return this;
     }
 
-    private BigDecimal calculateMonthlyRateValue(int numberOfInstallments, BigDecimal loanAmount) {
-        BigDecimal yConstant = BigDecimal
-                .valueOf(1 + (creditInterestsRateYearly / NUMBER_OF_MONTHS_IN_YEAR))
-                .setScale(3, RoundingMode.HALF_UP);
-
-        return loanAmount
-                .multiply(yConstant
-                        .pow(numberOfInstallments))
-                .multiply(yConstant
-                        .subtract(BigDecimal.valueOf(1)))
-                .divide(yConstant
-                        .pow(numberOfInstallments - 1), RoundingMode.HALF_UP);
+    private Predicate<LoanRequest> monthlyToIncomePercentage(
+            BigDecimal monthlyRateValue, BigDecimal customerMonthlyIncome) {
+        return rule -> monthlyRateValue
+                .divide(customerMonthlyIncome, RoundingMode.HALF_UP)
+                .compareTo(BigDecimal.valueOf(MAXIMUM_RATE_TO_INCOME_PERCENTAGE)) < 0;
     }
 
     public LoanRequestValidationRules clientNotOnDebtorsList() {
-        loanRequestValidationRules
-                .add(rule -> customerCheck.checkCustomerIfNotOnDebtorList(loanRequest));
+        validationRules
+                .add(rule -> customerCheck
+                        .checkCustomerIfNotOnDebtorList(loanRequest.getCustomerTaxId()));
         return this;
     }
 
     public List<Predicate<LoanRequest>> build() {
-        return loanRequestValidationRules;
+        return validationRules;
     }
 }

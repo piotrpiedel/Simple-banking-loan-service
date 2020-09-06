@@ -22,14 +22,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class LoanRequest {
 
-    public enum LoanRequestStatus {
-        APPROVED, REJECTED
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long loanRequestNumber;
-
     private String customerName;
     private LocalDate customerBirthday;
     private String customerTaxId;
@@ -37,9 +32,11 @@ public class LoanRequest {
     private BigDecimal loanAmount;
     private Integer numberOfInstallments;
     private LocalDate firstInstallmentDate;
-
     @Enumerated(EnumType.STRING)
     private LoanRequestStatus evaluationResult;
-
     private LocalDateTime registrationDate;
+
+    public enum LoanRequestStatus {
+        APPROVED, REJECTED
+    }
 }
