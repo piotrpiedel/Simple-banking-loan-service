@@ -76,13 +76,13 @@ public class LoanRequestValidationRules {
             BigDecimal monthlyRateValue, BigDecimal customerMonthlyIncome) {
         return rule -> monthlyRateValue
                 .divide(customerMonthlyIncome, RoundingMode.HALF_UP)
-                .compareTo(BigDecimal.valueOf(MAXIMUM_RATE_TO_INCOME_PERCENTAGE)) < 0;
+                .compareTo(BigDecimal.valueOf(MAXIMUM_RATE_TO_INCOME_PERCENTAGE)) <= 0;
     }
 
     public LoanRequestValidationRules clientNotOnDebtorsList() {
         validationRules
-                .add(rule -> customerCheck
-                        .checkCustomerIfNotOnDebtorList(loanRequest.getCustomerTaxId()));
+                .add(rule -> !customerCheck
+                        .isCustomerDebtor(loanRequest.getCustomerTaxId()));
         return this;
     }
 

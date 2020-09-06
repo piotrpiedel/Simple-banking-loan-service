@@ -12,7 +12,7 @@ public class CheckCustomerService implements CustomerCheck {
     }
 
     @Override
-    public boolean checkCustomerIfNotOnDebtorList(String customerTaxId) {
+    public boolean isCustomerDebtor(String customerTaxId) {
         CustomerCheckResultDto customerCheckResultD =
                 checkCustomerClient.checkCustomerIfExistOnDebtorsList(customerTaxId);
         return customerCheckResultD.getIsRegisteredDebtor();

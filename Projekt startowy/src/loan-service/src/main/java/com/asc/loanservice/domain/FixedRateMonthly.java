@@ -13,28 +13,37 @@ public class FixedRateMonthly {
     }
 
     /*
-    Fixed installment algorithm = c * y^n * (y‑1) / (y^n‑1)
-        c – loan amount
+    Fixed installment algorithm = P (r(1+r)^n) / ((1+r)^n-1)
+        P – loan amount - Principal
         n – number of installments
-        y = 1 + (r / 12), where r is credit interests rate yearly
+        r = (R / 12), where R is credit interests rate yearly
     */
     public static FixedRateMonthly of(
             BigDecimal loanAmount,
             int numberOfInstallments,
             double creditInterestsRateYearly) {
 
-        BigDecimal yConstant = BigDecimal
-                .valueOf(1 + (creditInterestsRateYearly / NUMBER_OF_MONTHS_IN_YEAR))
-                .setScale(3, RoundingMode.HALF_UP);
+        BigDecimal monthlyInterestRate = BigDecimal
+                .valueOf(creditInterestsRateYearly / NUMBER_OF_MONTHS_IN_YEAR)
+                .setScale(4, RoundingMode.HALF_UP);
 
-        BigDecimal rate =
-                loanAmount
-                        .multiply(yConstant
-                                .pow(numberOfInstallments))
-                        .multiply(yConstant
-                                .subtract(BigDecimal.valueOf(1)))
-                        .divide(yConstant
-                                .pow(numberOfInstallments - 1), RoundingMode.HALF_UP);
+        BigDecimal onePlusMonthlyInterestRate = BigDecimal.valueOf(1).add(monthlyInterestRate);
+
+        BigDecimal onePlusMonthlyInterestByPow = onePlusMonthlyInterestRate
+                .pow(numberOfInstallments)
+                .setScale(4, RoundingMode.HALF_UP);
+
+        BigDecimal numerator = loanAmount
+                .multiply(monthlyInterestRate
+                        .multiply(onePlusMonthlyInterestByPow))
+                .setScale(4, RoundingMode.HALF_UP);
+        BigDecimal denominator = (
+                onePlusMonthlyInterestByPow.subtract(BigDecimal.valueOf(1)))
+                .setScale(4, RoundingMode.HALF_UP);
+
+        BigDecimal rate = numerator
+                .divide(denominator, RoundingMode.HALF_UP);
+
         return new FixedRateMonthly(rate);
     }
 

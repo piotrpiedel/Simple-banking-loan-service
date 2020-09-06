@@ -8,6 +8,8 @@ import java.util.Optional;
 @Service
 public class LoanRequestService {
 
+    public static final double CREDIT_INTERESTS_RATE_YEARLY = 0.04d;
+
     private final LoanRequestRepository loanRequestRepository;
     private final LoanRequestValidator loanRequestValidator;
 
@@ -25,7 +27,8 @@ public class LoanRequestService {
     }
 
     public LoanRequest registerLoanRequest(LoanRequest loanRequest) {
-        LoanRequestStatus loanRequestStatus = loanRequestValidator.validate(loanRequest);
+        LoanRequestStatus loanRequestStatus = loanRequestValidator
+                .validate(loanRequest, CREDIT_INTERESTS_RATE_YEARLY);
         loanRequest.setEvaluationResult(loanRequestStatus);
         return loanRequestRepository.save(loanRequest);
     }
