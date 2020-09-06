@@ -48,24 +48,4 @@ public class FixedRateMonthlyTest {
                         .getAsBigDecimal()
                         .setScale(2, RoundingMode.HALF_UP));
     }
-
-    @Test
-    public void ofTdestHighValue() {
-        //given
-        BigDecimal loanAmount = BigDecimal.valueOf(10000);
-        int numberOfInstallments = 12;
-        double creditInterestsRateYearly = 0.04;
-
-        //when
-        FixedRateMonthly fixedRateMonthly = FixedRateMonthly
-                .of(loanAmount, numberOfInstallments, creditInterestsRateYearly);
-
-        //then
-        double valueFromInternetCalculator = 851.86;
-        assertEquals(
-                BigDecimal.valueOf(valueFromInternetCalculator),
-                fixedRateMonthly
-                        .getAsBigDecimal()
-                        .setScale(2, RoundingMode.HALF_UP));
-    }
 }
